@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free File Converter – Convert Images & PDFs Online</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple: #7C3AED;
+    --purple-light: #EDE9FE;
+    --purple-mid: #A78BFA;
+    --purple-dark: #5B21B6;
+    --white: #ffffff;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-600: #4B5563;
+    --gray-800: #1F2937;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(124,58,237,0.10);
+    --shadow-hover: 0 8px 32px rgba(124,58,237,0.18);
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--white);
+    color: var(--gray-800);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── AD BANNERS ── */
+  .ad-banner {
+    width: 100%;
+    background: var(--gray-100);
+    border: 2px dashed var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    font-size: 13px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .ad-banner.top { height: 90px; }
+  .ad-banner.bottom { height: 90px; margin-top: auto; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--purple);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-icon svg { width: 20px; height: 20px; fill: white; }
+  .logo-text { font-size: 18px; font-weight: 700; color: var(--purple); }
+  .logo-text span { color: var(--gray-800); }
+  .header-badge {
+    background: var(--purple-light);
+    color: var(--purple);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ── MAIN CONTENT ── */
+  main { flex: 1; padding: 0 16px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ── HOME SECTION ── */
+  #home { display: block; }
+  .hero {
+    text-align: center;
+    padding: 56px 16px 40px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    color: var(--gray-800);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--purple); }
+  .hero p {
+    font-size: 17px;
+    color: var(--gray-600);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Category label */
+  .category-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--purple);
+    background: var(--purple-light);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  .section-group { margin-bottom: 40px; }
+  .section-group h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  /* ── TOOL CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .tool-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px 16px;
+    cursor: pointer;
+    transition: all .2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--purple);
+    transform: scaleX(0);
+    transition: transform .2s ease;
+    transform-origin: left;
+  }
+  .tool-card:hover {
+    border-color: var(--purple-mid);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .tool-card:hover::before { transform: scaleX(1); }
+  .card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--purple-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray-800);
+    line-height: 1.3;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: var(--gray-400);
+    line-height: 1.5;
+  }
+  .card-arrow {
+    margin-top: auto;
+    color: var(--purple);
+    font-size: 18px;
+    font-weight: 700;
+    align-self: flex-end;
+  }
+
+  /* ── TOOL VIEW ── */
+  .tool-view { display: none; }
+  .tool-view.active { display: block; }
+  .tool-view-inner { padding: 32px 0 60px; }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--purple);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 0;
+    margin-bottom: 24px;
+    transition: gap .2s;
+  }
+  .back-btn:hover { gap: 12px; }
+  .back-btn svg { width: 18px; height: 18px; }
+
+  .tool-header { margin-bottom: 32px; }
+  .tool-header h1 {
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+  }
+  .tool-header p { font-size: 15px; color: var(--gray-600); line-height: 1.6; }
+
+  /* ── DROP ZONE ── */
+  .drop-zone {
+    border: 2px dashed var(--purple-mid);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    background: var(--gray-50);
+    transition: all .2s;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--purple);
+    background: var(--purple-light);
+  }
+  .drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .drop-icon { font-size: 48px; margin-bottom: 12px; }
+  .drop-title { font-size: 17px; font-weight: 700; color: var(--gray-800); margin-bottom: 6px; }
+  .drop-subtitle { font-size: 13px; color: var(--gray-400); }
+  .drop-btn {
+    display: inline-block;
+    margin-top: 16px;
+    background: var(--purple);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+
+  /* ── SETTINGS PANEL ── */
+  .settings-panel {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+  }
+  .setting-group { display: flex; flex-direction: column; gap: 6px; }
+  .setting-group label { font-size: 13px; font-weight: 600; color: var(--gray-600); }
+  .setting-group input[type="range"] { width: 180px; accent-color: var(--purple); }
+  .setting-group input[type="number"] {
+    width: 90px;
+    padding: 6px 10px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+  }
+  .setting-group input:focus { border-color: var(--purple); }
+  .range-value { font-size: 12px; color: var(--purple); font-weight: 700; }
+
+  /* ── CONVERT BUTTON ── */
+  .convert-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+  }
+  .convert-btn:hover { background: var(--purple-dark); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.3); }
+  .convert-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* ── STATUS / PROGRESS ── */
+  .status-box {
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    display: none;
+  }
+  .status-box.info { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+  .status-box.success { background: #F0FDF4; color: #166534; border: 1px solid #BBF7D0; }
+  .status-box.error { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+  .status-box.show { display: block; }
+
+  /* ── RESULTS ── */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .result-card {
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: box-shadow .2s;
+  }
+  .result-card:hover { box-shadow: var(--shadow); }
+  .result-preview {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    background: var(--gray-100);
+    display: block;
+  }
+  .result-info {
+    padding: 10px 12px;
+    background: white;
+  }
+  .result-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-800);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+  .result-size { font-size: 11px; color: var(--gray-400); margin-bottom: 8px; }
+  .download-btn {
+    display: block;
+    width: 100%;
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background .2s;
+    text-decoration: none;
+  }
+  .download-btn:hover { background: var(--purple-dark); }
+
+  .download-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--purple-light);
+    color: var(--purple);
+    border: 1.5px solid var(--purple-mid);
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 16px;
+  }
+  .download-all-btn:hover { background: var(--purple); color: white; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    padding: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--gray-400);
+  }
+  footer strong { color: var(--purple); }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-top: 16px; display: none; }
+  .progress-wrap.show { display: block; }
+  .progress-label { font-size: 13px; color: var(--gray-600); margin-bottom: 6px; font-weight: 500; }
+  .progress-bar-bg {
+    height: 6px;
+    background: var(--gray-200);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--purple);
+    border-radius: 3px;
+    width: 0%;
+    transition: width .3s ease;
+  }
+
+  /* ── TABLE FOR EXCEL PREVIEW ── */
+  .sheet-preview-wrap {
+    max-height: 260px;
+    overflow: auto;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    margin-top: 16px;
+  }
+  .sheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .sheet-table th {
+    background: var(--purple);
+    color: white;
+    padding: 6px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+  }
+  .sheet-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--gray-100);
+    white-space: nowrap;
+  }
+  .sheet-table tr:hover td { background: var(--purple-light); }
+
+  /* ── MOBILE ── */
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    header { padding: 0 16px; }
+    .hero { padding: 36px 8px 28px; }
+    .settings-panel { flex-direction: column; }
+    .setting-group input[type="range"] { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP AD BANNER -->
+<div class="ad-banner top">📢 Advertisement · 728×90 Banner</div>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" onclick="showHome()" href="javascript:void(0)">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+    </div>
+    <span class="logo-text">File<span>Converter</span></span>
+  </a>
+  <span class="header-badge">100% Free</span>
+</header>
+
+<main>
+<div class="container">
+
+<!-- ══════════════════════════════════════ HOME ══════════════════════════════════════ -->
+<section id="home">
+  <div class="hero">
+    <div class="category-label">Free · No Sign-up · No Watermark</div>
+    <h1>Convert Files <span>Instantly</span><br>Right in Your Browser</h1>
+    <p>16 powerful tools — images, PDFs & spreadsheets. All processing happens locally on your device. Nothing is uploaded to any server.</p>
+  </div>
+
+  <div class="section-group">
+    <h2>🖼 Image Format Converters</h2>
+    <div class="cards-grid">
+      <div class="tool-card" onclick="showTool('jpg-png')"><div class="card-icon">🖼</div><div class="card-title">JPG to PNG</div><div class="card-desc">Convert JPEG images to lossless PNG format</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('png-jpg')"><div class="card-icon">📷</div><div class="card-title">PNG to JPG</div><div class="card-desc">Convert PNG files to compressed JPEG</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('jpg-webp')"><div class="card-icon">⚡</div><div class="card-title">JPG to WebP</div><div class="card-desc">Convert JPEG to modern WebP format</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('webp-jpg')"><div class="card-icon">🔄</div><div class="card-title">WebP to JPG</div><div class="card-desc">Convert WebP images to JPEG</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('png-webp')"><div class="card-icon">✨</div><div class="card-title">PNG to WebP</div><div class="card-desc">Convert PNG to WebP for web use</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('webp-png')"><div class="card-icon">🗂</div><div class="card-title">WebP to PNG</div><div class="card-desc">Convert WebP back to PNG</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('gif-jpg')"><div class="card-icon">🎞</div><div class="card-title">GIF to JPG</div><div class="card-desc">Extract first frame of GIF as JPEG</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('bmp-jpg')"><div class="card-icon">🗃</div><div class="card-title">BMP to JPG</div><div class="card-desc">Convert Bitmap images to JPEG</div><div class="card-arrow">→</div></div>
+    </div>
+  </div>
+
+  <div class="section-group">
+    <h2>📄 PDF Tools</h2>
+    <div class="cards-grid">
+      <div class="tool-card" onclick="showTool('pdf-jpg')"><div class="card-icon">📑</div><div class="card-title">PDF to JPG</div><div class="card-desc">Convert each PDF page to a JPEG image</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('pdf-png')"><div class="card-icon">📋</div><div class="card-title">PDF to PNG</div><div class="card-desc">Convert each PDF page to a PNG image</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('jpg-pdf')"><div class="card-icon">📝</div><div class="card-title">JPG to PDF</div><div class="card-desc">Combine JPEGs into a single PDF</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('png-pdf')"><div class="card-icon">📄</div><div class="card-title">PNG to PDF</div><div class="card-desc">Combine PNG files into a PDF</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('img-pdf')"><div class="card-icon">🖼</div><div class="card-title">Image to PDF</div><div class="card-desc">Any image format to PDF document</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('excel-pdf')"><div class="card-icon">📊</div><div class="card-title">Excel to PDF</div><div class="card-desc">Convert .xlsx / .xls spreadsheet to PDF</div><div class="card-arrow">→</div></div>
+    </div>
+  </div>
+
+  <div class="section-group">
+    <h2>🛠 Image Editing Tools</h2>
+    <div class="cards-grid">
+      <div class="tool-card" onclick="showTool('compressor')"><div class="card-icon">💾</div><div class="card-title">Image Compressor</div><div class="card-desc">Reduce image file size with quality control</div><div class="card-arrow">→</div></div>
+      <div class="tool-card" onclick="showTool('resizer')"><div class="card-icon">↔️</div><div class="card-title">Image Resizer</div><div class="card-desc">Resize images to custom dimensions</div><div class="card-arrow">→</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════ TOOL VIEWS ══════════════════════════════ -->
+
+<!-- Generic image converter template — reused via JS -->
+<section id="tool-jpg-png" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>JPG to PNG Converter</h1><p>Upload one or more JPEG images and download them as lossless PNG files instantly.</p></div>
+    <div class="drop-zone" id="dz-jpg-png" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'jpg-png')">
+      <input type="file" id="file-jpg-png" accept=".jpg,.jpeg,image/jpeg" multiple onchange="handleImgConvert('jpg-png','image/png','png')">
+      <div class="drop-icon">🖼</div>
+      <div class="drop-title">Drop JPG files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-jpg-png"></div>
+    <div id="results-jpg-png" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-png-jpg" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>PNG to JPG Converter</h1><p>Upload PNG images and convert them to JPEG. Transparent areas will be filled with white.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-png-jpg">92%</span></label>
+        <input type="range" min="1" max="100" value="92" id="q-png-jpg" oninput="document.getElementById('val-png-jpg').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-png-jpg" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'png-jpg')">
+      <input type="file" id="file-png-jpg" accept=".png,image/png" multiple onchange="handleImgConvert('png-jpg','image/jpeg','jpg',()=>document.getElementById('q-png-jpg').value/100)">
+      <div class="drop-icon">📷</div>
+      <div class="drop-title">Drop PNG files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-png-jpg"></div>
+    <div id="results-png-jpg" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-jpg-webp" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>JPG to WebP Converter</h1><p>Convert JPEG images to WebP for smaller file sizes and better web performance.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-jpg-webp">85%</span></label>
+        <input type="range" min="1" max="100" value="85" id="q-jpg-webp" oninput="document.getElementById('val-jpg-webp').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-jpg-webp" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'jpg-webp')">
+      <input type="file" id="file-jpg-webp" accept=".jpg,.jpeg,image/jpeg" multiple onchange="handleImgConvert('jpg-webp','image/webp','webp',()=>document.getElementById('q-jpg-webp').value/100)">
+      <div class="drop-icon">⚡</div>
+      <div class="drop-title">Drop JPG files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-jpg-webp"></div>
+    <div id="results-jpg-webp" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-webp-jpg" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>WebP to JPG Converter</h1><p>Convert WebP images to JPEG for compatibility with older software.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-webp-jpg">92%</span></label>
+        <input type="range" min="1" max="100" value="92" id="q-webp-jpg" oninput="document.getElementById('val-webp-jpg').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-webp-jpg" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'webp-jpg')">
+      <input type="file" id="file-webp-jpg" accept=".webp,image/webp" multiple onchange="handleImgConvert('webp-jpg','image/jpeg','jpg',()=>document.getElementById('q-webp-jpg').value/100)">
+      <div class="drop-icon">🔄</div>
+      <div class="drop-title">Drop WebP files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-webp-jpg"></div>
+    <div id="results-webp-jpg" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-png-webp" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>PNG to WebP Converter</h1><p>Convert PNG images to WebP format with optional quality settings.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-png-webp">85%</span></label>
+        <input type="range" min="1" max="100" value="85" id="q-png-webp" oninput="document.getElementById('val-png-webp').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-png-webp" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'png-webp')">
+      <input type="file" id="file-png-webp" accept=".png,image/png" multiple onchange="handleImgConvert('png-webp','image/webp','webp',()=>document.getElementById('q-png-webp').value/100)">
+      <div class="drop-icon">✨</div>
+      <div class="drop-title">Drop PNG files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-png-webp"></div>
+    <div id="results-png-webp" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-webp-png" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>WebP to PNG Converter</h1><p>Convert WebP images to lossless PNG format with full transparency support.</p></div>
+    <div class="drop-zone" id="dz-webp-png" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'webp-png')">
+      <input type="file" id="file-webp-png" accept=".webp,image/webp" multiple onchange="handleImgConvert('webp-png','image/png','png')">
+      <div class="drop-icon">🗂</div>
+      <div class="drop-title">Drop WebP files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-webp-png"></div>
+    <div id="results-webp-png" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-gif-jpg" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>GIF to JPG Converter</h1><p>Extract the first frame of a GIF animation and save it as a JPEG image.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-gif-jpg">90%</span></label>
+        <input type="range" min="1" max="100" value="90" id="q-gif-jpg" oninput="document.getElementById('val-gif-jpg').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-gif-jpg" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'gif-jpg')">
+      <input type="file" id="file-gif-jpg" accept=".gif,image/gif" multiple onchange="handleImgConvert('gif-jpg','image/jpeg','jpg',()=>document.getElementById('q-gif-jpg').value/100)">
+      <div class="drop-icon">🎞</div>
+      <div class="drop-title">Drop GIF files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-gif-jpg"></div>
+    <div id="results-gif-jpg" class="results-grid"></div>
+  </div>
+</section>
+
+<section id="tool-bmp-jpg" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>BMP to JPG Converter</h1><p>Convert Windows Bitmap (BMP) images to compressed JPEG format.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-bmp-jpg">90%</span></label>
+        <input type="range" min="1" max="100" value="90" id="q-bmp-jpg" oninput="document.getElementById('val-bmp-jpg').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-bmp-jpg" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'bmp-jpg')">
+      <input type="file" id="file-bmp-jpg" accept=".bmp,image/bmp" multiple onchange="handleImgConvert('bmp-jpg','image/jpeg','jpg',()=>document.getElementById('q-bmp-jpg').value/100)">
+      <div class="drop-icon">🗃</div>
+      <div class="drop-title">Drop BMP files here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-bmp-jpg"></div>
+    <div id="results-bmp-jpg" class="results-grid"></div>
+  </div>
+</section>
+
+<!-- PDF to JPG -->
+<section id="tool-pdf-jpg" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>PDF to JPG Converter</h1><p>Convert each page of a PDF document into a high-quality JPEG image.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Resolution (DPI): <span class="range-value" id="val-pdf-jpg">150</span></label>
+        <input type="range" min="72" max="300" value="150" id="dpi-pdf-jpg" oninput="document.getElementById('val-pdf-jpg').textContent=this.value">
+      </div>
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="valq-pdf-jpg">92%</span></label>
+        <input type="range" min="1" max="100" value="92" id="q-pdf-jpg" oninput="document.getElementById('valq-pdf-jpg').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-pdf-jpg" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDropPDF(event,'pdf-jpg','image/jpeg','jpg')">
+      <input type="file" id="file-pdf-jpg" accept=".pdf,application/pdf" onchange="handlePDFtoImg('pdf-jpg','image/jpeg','jpg')">
+      <div class="drop-icon">📑</div>
+      <div class="drop-title">Drop a PDF file here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose PDF</span>
+    </div>
+    <div class="progress-wrap" id="prog-pdf-jpg"><div class="progress-label" id="prog-label-pdf-jpg">Processing…</div><div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill-pdf-jpg"></div></div></div>
+    <div class="status-box" id="status-pdf-jpg"></div>
+    <div id="results-pdf-jpg" class="results-grid"></div>
+    <div id="dlall-pdf-jpg"></div>
+  </div>
+</section>
+
+<!-- PDF to PNG -->
+<section id="tool-pdf-png" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>PDF to PNG Converter</h1><p>Convert each page of a PDF document into a lossless PNG image with transparency.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Resolution (DPI): <span class="range-value" id="val-pdf-png">150</span></label>
+        <input type="range" min="72" max="300" value="150" id="dpi-pdf-png" oninput="document.getElementById('val-pdf-png').textContent=this.value">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-pdf-png" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDropPDF(event,'pdf-png','image/png','png')">
+      <input type="file" id="file-pdf-png" accept=".pdf,application/pdf" onchange="handlePDFtoImg('pdf-png','image/png','png')">
+      <div class="drop-icon">📋</div>
+      <div class="drop-title">Drop a PDF file here</div>
+      <div class="drop-subtitle">or click to browse</div>
+      <span class="drop-btn">Choose PDF</span>
+    </div>
+    <div class="progress-wrap" id="prog-pdf-png"><div class="progress-label" id="prog-label-pdf-png">Processing…</div><div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill-pdf-png"></div></div></div>
+    <div class="status-box" id="status-pdf-png"></div>
+    <div id="results-pdf-png" class="results-grid"></div>
+    <div id="dlall-pdf-png"></div>
+  </div>
+</section>
+
+<!-- JPG to PDF -->
+<section id="tool-jpg-pdf" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>JPG to PDF Converter</h1><p>Combine one or more JPEG images into a single PDF document. Each image becomes a page.</p></div>
+    <div class="drop-zone" id="dz-jpg-pdf" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDropImgToPDF(event,'jpg-pdf')">
+      <input type="file" id="file-jpg-pdf" accept=".jpg,.jpeg,image/jpeg" multiple onchange="handleImgToPDF('jpg-pdf')">
+      <div class="drop-icon">📝</div>
+      <div class="drop-title">Drop JPG files here</div>
+      <div class="drop-subtitle">or click to browse · multiple files supported</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div id="preview-list-jpg-pdf"></div>
+    <div class="status-box" id="status-jpg-pdf"></div>
+    <div id="result-jpg-pdf"></div>
+  </div>
+</section>
+
+<!-- PNG to PDF -->
+<section id="tool-png-pdf" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>PNG to PDF Converter</h1><p>Combine one or more PNG images into a single PDF document.</p></div>
+    <div class="drop-zone" id="dz-png-pdf" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDropImgToPDF(event,'png-pdf')">
+      <input type="file" id="file-png-pdf" accept=".png,image/png" multiple onchange="handleImgToPDF('png-pdf')">
+      <div class="drop-icon">📄</div>
+      <div class="drop-title">Drop PNG files here</div>
+      <div class="drop-subtitle">or click to browse · multiple files supported</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div id="preview-list-png-pdf"></div>
+    <div class="status-box" id="status-png-pdf"></div>
+    <div id="result-png-pdf"></div>
+  </div>
+</section>
+
+<!-- Image to PDF -->
+<section id="tool-img-pdf" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>Image to PDF Converter</h1><p>Convert any image format (JPG, PNG, WebP, BMP, GIF) into a PDF. Multiple images = multiple pages.</p></div>
+    <div class="drop-zone" id="dz-img-pdf" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDropImgToPDF(event,'img-pdf')">
+      <input type="file" id="file-img-pdf" accept="image/*" multiple onchange="handleImgToPDF('img-pdf')">
+      <div class="drop-icon">🖼</div>
+      <div class="drop-title">Drop any image files here</div>
+      <div class="drop-subtitle">JPG · PNG · WebP · BMP · GIF · multiple files supported</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div id="preview-list-img-pdf"></div>
+    <div class="status-box" id="status-img-pdf"></div>
+    <div id="result-img-pdf"></div>
+  </div>
+</section>
+
+<!-- Excel to PDF -->
+<section id="tool-excel-pdf" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>Excel to PDF Converter</h1><p>Convert .xlsx or .xls spreadsheets to a formatted PDF document.</p></div>
+    <div class="drop-zone" id="dz-excel-pdf" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDropExcel(event)">
+      <input type="file" id="file-excel-pdf" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" onchange="handleExcelToPDF()">
+      <div class="drop-icon">📊</div>
+      <div class="drop-title">Drop Excel file here</div>
+      <div class="drop-subtitle">.xlsx or .xls format</div>
+      <span class="drop-btn">Choose File</span>
+    </div>
+    <div id="excel-preview"></div>
+    <div class="status-box" id="status-excel-pdf"></div>
+    <div id="result-excel-pdf"></div>
+  </div>
+</section>
+
+<!-- Image Compressor -->
+<section id="tool-compressor" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>Image Compressor</h1><p>Reduce file size while keeping quality. Works with JPG, PNG, and WebP images.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-compressor">80%</span></label>
+        <input type="range" min="1" max="99" value="80" id="q-compressor" oninput="document.getElementById('val-compressor').textContent=this.value+'%'">
+      </div>
+      <div class="setting-group">
+        <label>Output Format</label>
+        <select id="fmt-compressor" style="padding:6px 10px;border:1.5px solid #E5E7EB;border-radius:6px;font-size:14px;outline:none;accent-color:#7C3AED">
+          <option value="same">Keep original</option>
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/png">PNG</option>
+          <option value="image/webp">WebP</option>
+        </select>
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-compressor" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'compressor')">
+      <input type="file" id="file-compressor" accept="image/*" multiple onchange="handleCompressor()">
+      <div class="drop-icon">💾</div>
+      <div class="drop-title">Drop images here</div>
+      <div class="drop-subtitle">or click to browse · multiple files supported</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-compressor"></div>
+    <div id="results-compressor" class="results-grid"></div>
+  </div>
+</section>
+
+<!-- Image Resizer -->
+<section id="tool-resizer" class="tool-view">
+  <div class="tool-view-inner">
+    <button class="back-btn" onclick="showHome()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 19l-7-7 7-7"/></svg> All Tools</button>
+    <div class="tool-header"><h1>Image Resizer</h1><p>Resize images to exact pixel dimensions. Lock aspect ratio or set custom width & height.</p></div>
+    <div class="settings-panel">
+      <div class="setting-group">
+        <label>Width (px)</label>
+        <input type="number" id="w-resizer" placeholder="e.g. 1920" min="1" max="8000">
+      </div>
+      <div class="setting-group">
+        <label>Height (px)</label>
+        <input type="number" id="h-resizer" placeholder="e.g. 1080" min="1" max="8000">
+      </div>
+      <div class="setting-group">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="lock-ratio" checked style="accent-color:#7C3AED;width:16px;height:16px"> Lock aspect ratio
+        </label>
+      </div>
+      <div class="setting-group">
+        <label>Quality: <span class="range-value" id="val-resizer">92%</span></label>
+        <input type="range" min="1" max="100" value="92" id="q-resizer" oninput="document.getElementById('val-resizer').textContent=this.value+'%'">
+      </div>
+    </div>
+    <div class="drop-zone" id="dz-resizer" ondragover="dzDragover(event)" ondragleave="dzDragleave(event)" ondrop="dzDrop(event,'resizer')">
+      <input type="file" id="file-resizer" accept="image/*" multiple onchange="handleResizer()">
+      <div class="drop-icon">↔️</div>
+      <div class="drop-title">Drop images here</div>
+      <div class="drop-subtitle">or click to browse · multiple files supported</div>
+      <span class="drop-btn">Choose Files</span>
+    </div>
+    <div class="status-box" id="status-resizer"></div>
+    <div id="results-resizer" class="results-grid"></div>
+  </div>
+</section>
+
+</div><!-- .container -->
+</main>
+
+<!-- BOTTOM AD BANNER -->
+<div class="ad-banner bottom">📢 Advertisement · 728×90 Banner</div>
+
+<footer>
+  <strong>FileConverter</strong> — Free online file conversion. No uploads. No sign-up. All processing happens in your browser.
+  <br><br>© 2025 FileConverter. All rights reserved.
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════════════════════
+function showHome() {
+  document.getElementById('home').style.display = 'block';
+  document.querySelectorAll('.tool-view').forEach(el => el.classList.remove('active'));
+  window.scrollTo(0, 0);
+}
+
+function showTool(id) {
+  document.getElementById('home').style.display = 'none';
+  document.querySelectorAll('.tool-view').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('tool-' + id);
+  if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+}
+
+// ════════════════════════════════════════════════════════
+//  DRAG & DROP HELPERS
+// ════════════════════════════════════════════════════════
+function dzDragover(e) {
+  e.preventDefault();
+  e.currentTarget.classList.add('dragover');
+}
+function dzDragleave(e) {
+  e.currentTarget.classList.remove('dragover');
+}
+function dzDrop(e, toolId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const input = document.getElementById('file-' + toolId);
+  const dt = new DataTransfer();
+  for (const f of e.dataTransfer.files) dt.items.add(f);
+  input.files = dt.files;
+  input.dispatchEvent(new Event('change'));
+}
+function dzDropPDF(e, toolId, mime, ext) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const input = document.getElementById('file-' + toolId);
+  const dt = new DataTransfer();
+  for (const f of e.dataTransfer.files) dt.items.add(f);
+  input.files = dt.files;
+  handlePDFtoImg(toolId, mime, ext);
+}
+function dzDropImgToPDF(e, toolId) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const input = document.getElementById('file-' + toolId);
+  const dt = new DataTransfer();
+  for (const f of e.dataTransfer.files) dt.items.add(f);
+  input.files = dt.files;
+  handleImgToPDF(toolId);
+}
+function dzDropExcel(e) {
+  e.preventDefault();
+  document.getElementById('dz-excel-pdf').classList.remove('dragover');
+  const input = document.getElementById('file-excel-pdf');
+  const dt = new DataTransfer();
+  for (const f of e.dataTransfer.files) dt.items.add(f);
+  input.files = dt.files;
+  handleExcelToPDF();
+}
+
+// ════════════════════════════════════════════════════════
+//  STATUS / UI HELPERS
+// ════════════════════════════════════════════════════════
+function setStatus(id, type, msg) {
+  const el = document.getElementById('status-' + id);
+  if (!el) return;
+  el.className = 'status-box show ' + type;
+  el.textContent = msg;
+}
+function clearStatus(id) {
+  const el = document.getElementById('status-' + id);
+  if (el) { el.className = 'status-box'; el.textContent = ''; }
+}
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(2) + ' MB';
+}
+function nameNoExt(name) {
+  return name.replace(/\.[^.]+$/, '');
+}
+function makeDLCard(dataUrl, filename, origSize, convertedBlob) {
+  const size = convertedBlob ? fmtSize(convertedBlob.size) : '';
+  const card = document.createElement('div');
+  card.className = 'result-card';
+  card.innerHTML = `
+    <img src="${dataUrl}" alt="${filename}" class="result-preview">
+    <div class="result-info">
+      <div class="result-name">${filename}</div>
+      ${origSize ? `<div class="result-size">${origSize} → ${size}</div>` : `<div class="result-size">${size}</div>`}
+      <a class="download-btn" href="${dataUrl}" download="${filename}">⬇ Download</a>
+    </div>`;
+  return card;
+}
+function setProgress(id, pct, label) {
+  const wrap = document.getElementById('prog-' + id);
+  const fill = document.getElementById('prog-fill-' + id);
+  const lbl  = document.getElementById('prog-label-' + id);
+  if (!wrap) return;
+  wrap.classList.add('show');
+  fill.style.width = pct + '%';
+  if (lbl) lbl.textContent = label || 'Processing…';
+  if (pct >= 100) setTimeout(() => wrap.classList.remove('show'), 800);
+}
+
+// ════════════════════════════════════════════════════════
+//  IMAGE → IMAGE CONVERTER (canvas-based)
+// ════════════════════════════════════════════════════════
+function handleImgConvert(toolId, mimeOut, extOut, qualityFn) {
+  const input = document.getElementById('file-' + toolId);
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const grid = document.getElementById('results-' + toolId);
+  grid.innerHTML = '';
+  clearStatus(toolId);
+
+  let done = 0;
+  setStatus(toolId, 'info', `Converting ${files.length} file(s)…`);
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        // fill white for formats that don't support alpha
+        if (mimeOut === 'image/jpeg') { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+        ctx.drawImage(img, 0, 0);
+        const quality = qualityFn ? qualityFn() : undefined;
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const fname = nameNoExt(file.name) + '.' + extOut;
+          grid.appendChild(makeDLCard(url, fname, fmtSize(file.size), blob));
+          done++;
+          if (done === files.length) setStatus(toolId, 'success', `✓ ${done} file(s) converted successfully.`);
+        }, mimeOut, quality);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+// ════════════════════════════════════════════════════════
+//  IMAGE COMPRESSOR
+// ════════════════════════════════════════════════════════
+function handleCompressor() {
+  const input = document.getElementById('file-compressor');
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const grid = document.getElementById('results-compressor');
+  grid.innerHTML = '';
+  clearStatus('compressor');
+
+  let done = 0;
+  const q = () => document.getElementById('q-compressor').value / 100;
+  const fmtSel = document.getElementById('fmt-compressor').value;
+  setStatus('compressor', 'info', `Compressing ${files.length} file(s)…`);
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+
+        let mime = fmtSel === 'same' ? (file.type || 'image/jpeg') : fmtSel;
+        if (mime === 'image/png') mime = 'image/png'; // png ignores quality
+        let ext = mime.split('/')[1];
+        if (ext === 'jpeg') ext = 'jpg';
+
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const fname = nameNoExt(file.name) + '_compressed.' + ext;
+          grid.appendChild(makeDLCard(url, fname, fmtSize(file.size), blob));
+          done++;
+          if (done === files.length) setStatus('compressor', 'success', `✓ ${done} file(s) compressed.`);
+        }, mime, q());
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+// ════════════════════════════════════════════════════════
+//  IMAGE RESIZER
+// ════════════════════════════════════════════════════════
+let _resizerOrigRatio = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const wIn = document.getElementById('w-resizer');
+  const hIn = document.getElementById('h-resizer');
+  if (!wIn) return;
+  wIn.addEventListener('input', () => {
+    if (document.getElementById('lock-ratio').checked && _resizerOrigRatio) {
+      hIn.value = Math.round(wIn.value / _resizerOrigRatio);
+    }
+  });
+  hIn.addEventListener('input', () => {
+    if (document.getElementById('lock-ratio').checked && _resizerOrigRatio) {
+      wIn.value = Math.round(hIn.value * _resizerOrigRatio);
+    }
+  });
+});
+
+function handleResizer() {
+  const input = document.getElementById('file-resizer');
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  const wVal = parseInt(document.getElementById('w-resizer').value);
+  const hVal = parseInt(document.getElementById('h-resizer').value);
+  const q = document.getElementById('q-resizer').value / 100;
+  const grid = document.getElementById('results-resizer');
+  grid.innerHTML = '';
+  clearStatus('resizer');
+
+  if (!wVal && !hVal) { setStatus('resizer','error','Please enter at least a width or height.'); return; }
+
+  let done = 0;
+  setStatus('resizer','info',`Resizing ${files.length} file(s)…`);
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        _resizerOrigRatio = img.naturalWidth / img.naturalHeight;
+        let tw = wVal, th = hVal;
+        if (!tw) tw = Math.round(th * _resizerOrigRatio);
+        if (!th) th = Math.round(tw / _resizerOrigRatio);
+        const canvas = document.createElement('canvas');
+        canvas.width = tw; canvas.height = th;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0,0,tw,th);
+        ctx.drawImage(img, 0, 0, tw, th);
+        const mime = file.type || 'image/jpeg';
+        let ext = mime.split('/')[1]; if (ext==='jpeg') ext='jpg';
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const fname = nameNoExt(file.name) + `_${tw}x${th}.` + ext;
+          grid.appendChild(makeDLCard(url, fname, fmtSize(file.size), blob));
+          done++;
+          if (done === files.length) setStatus('resizer','success',`✓ ${done} file(s) resized to ${tw}×${th}px.`);
+        }, mime, q);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+// ════════════════════════════════════════════════════════
+//  PDF → IMAGE  (PDF.js)
+// ════════════════════════════════════════════════════════
+async function handlePDFtoImg(toolId, mimeOut, extOut) {
+  const input = document.getElementById('file-' + toolId);
+  const file = input.files[0];
+  if (!file) return;
+  const grid = document.getElementById('results-' + toolId);
+  grid.innerHTML = '';
+  clearStatus(toolId);
+
+  const dpi = parseInt(document.getElementById('dpi-' + toolId).value) || 150;
+  const quality = toolId === 'pdf-jpg' ? (document.getElementById('q-pdf-jpg').value / 100) : undefined;
+  const scale = dpi / 72;
+
+  setStatus(toolId, 'info', 'Loading PDF…');
+  try {
+    // Set PDF.js worker
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    const arrayBuf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuf }).promise;
+    const numPages = pdf.numPages;
+    setStatus(toolId, 'info', `PDF loaded — ${numPages} page(s). Rendering…`);
+
+    const allDataUrls = [];
+    for (let i = 1; i <= numPages; i++) {
+      setProgress(toolId, Math.round((i-1)/numPages*100), `Rendering page ${i} of ${numPages}…`);
+      const page = await pdf.getPage(i);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.floor(vp.width);
+      canvas.height = Math.floor(vp.height);
+      const ctx = canvas.getContext('2d');
+      if (mimeOut === 'image/jpeg') { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      const dataUrl = canvas.toDataURL(mimeOut, quality);
+      allDataUrls.push(dataUrl);
+      const fname = nameNoExt(file.name) + `_page${i}.` + extOut;
+      const blob = await (await fetch(dataUrl)).blob();
+      grid.appendChild(makeDLCard(dataUrl, fname, null, blob));
+    }
+    setProgress(toolId, 100, 'Done!');
+    setStatus(toolId, 'success', `✓ ${numPages} page(s) converted successfully.`);
+
+    // Download all button
+    if (numPages > 1) {
+      const dlAllWrap = document.getElementById('dlall-' + toolId);
+      if (dlAllWrap) {
+        dlAllWrap.innerHTML = '';
+        const btn = document.createElement('button');
+        btn.className = 'download-all-btn';
+        btn.textContent = '⬇ Download All Pages';
+        btn.onclick = () => {
+          allDataUrls.forEach((url, idx) => {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nameNoExt(file.name) + `_page${idx+1}.` + extOut;
+            a.click();
+          });
+        };
+        dlAllWrap.appendChild(btn);
+      }
+    }
+  } catch(err) {
+    setStatus(toolId, 'error', 'Error: ' + err.message);
+  }
+  input.value = '';
+}
+
+// ════════════════════════════════════════════════════════
+//  IMAGE(S) → PDF  (jsPDF)
+// ════════════════════════════════════════════════════════
+function handleImgToPDF(toolId) {
+  const input = document.getElementById('file-' + toolId);
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  clearStatus(toolId);
+  const previewList = document.getElementById('preview-list-' + toolId);
+  const resultWrap = document.getElementById('result-' + toolId);
+  if (previewList) previewList.innerHTML = '';
+  if (resultWrap) resultWrap.innerHTML = '';
+  setStatus(toolId, 'info', `${files.length} file(s) selected. Click Convert to generate PDF.`);
+
+  // show thumbnails + convert button
+  if (previewList) {
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;';
+    files.forEach(f => {
+      const img = new Image();
+      const url = URL.createObjectURL(f);
+      img.src = url;
+      img.style.cssText = 'height:80px;border-radius:6px;border:1.5px solid #E5E7EB;object-fit:cover;';
+      grid.appendChild(img);
+    });
+    previewList.appendChild(grid);
+
+    const btn = document.createElement('button');
+    btn.className = 'convert-btn';
+    btn.textContent = '⚡ Convert to PDF';
+    btn.onclick = () => doImgToPDF(toolId, files);
+    previewList.appendChild(btn);
+  }
+  input.value = '';
+}
+
+async function doImgToPDF(toolId, files) {
+  setStatus(toolId, 'info', 'Creating PDF…');
+  try {
+    const { jsPDF } = window.jspdf;
+    let pdf = null;
+
+    for (let i = 0; i < files.length; i++) {
+      const dataUrl = await fileToDataUrl(files[i]);
+      const img = await loadImage(dataUrl);
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const orientation = w >= h ? 'l' : 'p';
+      const pdfW = orientation === 'l' ? 297 : 210;
+      const pdfH = orientation === 'l' ? 210 : 297;
+
+      if (!pdf) {
+        pdf = new jsPDF({ orientation, unit: 'mm', format: 'a4' });
+      } else {
+        pdf.addPage('a4', orientation);
+      }
+
+      const ratio = Math.min(pdfW / w, pdfH / h);
+      const iw = w * ratio, ih = h * ratio;
+      const x = (pdfW - iw) / 2, y = (pdfH - ih) / 2;
+      const fmt = files[i].type === 'image/png' ? 'PNG' : 'JPEG';
+      pdf.addImage(dataUrl, fmt, x, y, iw, ih);
+    }
+
+    const fname = 'converted.pdf';
+    pdf.save(fname);
+    const blob = pdf.output('blob');
+    const resultWrap = document.getElementById('result-' + toolId);
+    if (resultWrap) {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fname;
+      a.className = 'download-btn';
+      a.style.cssText = 'display:inline-block;margin-top:16px;';
+      a.textContent = '⬇ Download PDF';
+      resultWrap.innerHTML = '';
+      resultWrap.appendChild(a);
+    }
+    setStatus(toolId, 'success', `✓ PDF created with ${files.length} page(s). Download started.`);
+  } catch(err) {
+    setStatus(toolId, 'error', 'Error: ' + err.message);
+  }
+}
+
+function fileToDataUrl(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+function loadImage(src) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = src;
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  EXCEL → PDF  (SheetJS + jsPDF)
+// ════════════════════════════════════════════════════════
+let _excelData = null;
+
+async function handleExcelToPDF() {
+  const input = document.getElementById('file-excel-pdf');
+  const file = input.files[0];
+  if (!file) return;
+  clearStatus('excel-pdf');
+  document.getElementById('excel-preview').innerHTML = '';
+  document.getElementById('result-excel-pdf').innerHTML = '';
+  setStatus('excel-pdf', 'info', 'Reading spreadsheet…');
+
+  try {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const sheetName = wb.SheetNames[0];
+    const ws = wb.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    _excelData = { data, sheetName, fileName: file.name };
+
+    // preview table
+    const wrap = document.createElement('div');
+    wrap.className = 'sheet-preview-wrap';
+    const table = document.createElement('table');
+    table.className = 'sheet-table';
+    data.slice(0, 50).forEach((row, ri) => {
+      const tr = document.createElement('tr');
+      row.forEach(cell => {
+        const td = document.createElement(ri === 0 ? 'th' : 'td');
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+    wrap.appendChild(table);
+    const previewWrap = document.getElementById('excel-preview');
+    const label = document.createElement('p');
+    label.style.cssText = 'font-size:13px;color:#4B5563;margin:16px 0 4px;font-weight:600;';
+    label.textContent = `Sheet: "${sheetName}" · ${data.length} rows (showing first 50)`;
+    previewWrap.appendChild(label);
+    previewWrap.appendChild(wrap);
+
+    const btn = document.createElement('button');
+    btn.className = 'convert-btn';
+    btn.style.marginTop = '16px';
+    btn.textContent = '⚡ Convert to PDF';
+    btn.onclick = doExcelToPDF;
+    previewWrap.appendChild(btn);
+
+    setStatus('excel-pdf', 'success', 'Spreadsheet loaded. Click Convert to PDF.');
+  } catch(err) {
+    setStatus('excel-pdf', 'error', 'Error reading file: ' + err.message);
+  }
+  input.value = '';
+}
+
+function doExcelToPDF() {
+  if (!_excelData) return;
+  setStatus('excel-pdf', 'info', 'Generating PDF…');
+  try {
+    const { jsPDF } = window.jspdf;
+    const { data, sheetName, fileName } = _excelData;
+    const doc = new jsPDF({ orientation: 'l', unit: 'mm', format: 'a4' });
+
+    const pageW = 297, pageH = 210;
+    const margin = 12;
+    const usableW = pageW - margin * 2;
+
+    // Title
+    doc.setFontSize(13);
+    doc.setTextColor(124, 58, 237);
+    doc.text(nameNoExt(fileName) + ' — ' + sheetName, margin, margin + 6);
+    doc.setTextColor(0, 0, 0);
+
+    const colCount = Math.max(...data.map(r => r.length), 1);
+    const colW = Math.min(usableW / colCount, 60);
+    const rowH = 7;
+    let y = margin + 14;
+    const lineHeight = rowH;
+
+    doc.setFontSize(8);
+    data.forEach((row, ri) => {
+      if (y + lineHeight > pageH - margin) {
+        doc.addPage('a4', 'landscape');
+        y = margin + 6;
+      }
+      if (ri === 0) {
+        // header row
+        doc.setFillColor(124, 58, 237);
+        doc.rect(margin, y - 5, usableW, lineHeight, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFont(undefined, 'bold');
+      } else {
+        doc.setFillColor(ri % 2 === 0 ? 245 : 255, ri % 2 === 0 ? 243 : 255, 255);
+        doc.rect(margin, y - 5, usableW, lineHeight, 'F');
+        doc.setTextColor(30, 30, 30);
+        doc.setFont(undefined, 'normal');
+      }
+      row.forEach((cell, ci) => {
+        const x = margin + ci * colW;
+        if (x + colW > pageW - margin) return; // clip
+        const txt = String(cell);
+        doc.text(doc.splitTextToSize(txt, colW - 2)[0], x + 1, y);
+      });
+      y += lineHeight;
+    });
+
+    const pdfName = nameNoExt(fileName) + '.pdf';
+    doc.save(pdfName);
+    const blob = doc.output('blob');
+    const wrap = document.getElementById('result-excel-pdf');
+    wrap.innerHTML = '';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = pdfName;
+    a.className = 'download-btn';
+    a.style.cssText = 'display:inline-block;margin-top:12px;';
+    a.textContent = '⬇ Download PDF';
+    wrap.appendChild(a);
+    setStatus('excel-pdf', 'success', '✓ PDF generated and downloaded!');
+  } catch(err) {
+    setStatus('excel-pdf', 'error', 'Error: ' + err.message);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  WIRE UP remaining image converters on DOMContentLoaded
+// ════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Wire compressor file change
+  const compInput = document.getElementById('file-compressor');
+  if (compInput) compInput.addEventListener('change', handleCompressor);
+
+  // Wire resizer file change
+  const resInput = document.getElementById('file-resizer');
+  if (resInput) resInput.addEventListener('change', handleResizer);
+
+  // Resizer aspect ratio
+  const wIn = document.getElementById('w-resizer');
+  const hIn = document.getElementById('h-resizer');
+  if (wIn && hIn) {
+    wIn.addEventListener('input', () => {
+      if (document.getElementById('lock-ratio').checked && _resizerOrigRatio) {
+        hIn.value = Math.round(wIn.value / _resizerOrigRatio);
+      }
+    });
+    hIn.addEventListener('input', () => {
+      if (document.getElementById('lock-ratio').checked && _resizerOrigRatio) {
+        wIn.value = Math.round(hIn.value * _resizerOrigRatio);
+      }
+    });
+  }
+
+  // Preview first image for resizer to set ratio hint
+  if (resInput) {
+    resInput.addEventListener('change', () => {
+      const f = resInput.files[0];
+      if (!f) return;
+      const img = new Image();
+      img.onload = () => { _resizerOrigRatio = img.naturalWidth / img.naturalHeight; };
+      img.src = URL.createObjectURL(f);
+    });
+  }
+});
+</script>
+</body>
+</html>
