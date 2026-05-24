@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-0H0NC8RLSX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-0H0NC8RLSX');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Free File Converter – Convert Images & PDFs Online</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -33,23 +41,6 @@
     display: flex;
     flex-direction: column;
   }
-
-  /* ── AD BANNERS ── */
-  .ad-banner {
-    width: 100%;
-    background: var(--gray-100);
-    border: 2px dashed var(--gray-200);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gray-400);
-    font-size: 13px;
-    letter-spacing: .5px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .ad-banner.top { height: 90px; }
-  .ad-banner.bottom { height: 90px; margin-top: auto; }
 
   /* ── HEADER ── */
   header {
@@ -477,9 +468,6 @@
 </head>
 <body>
 
-<!-- TOP AD BANNER -->
-<div class="ad-banner top">📢 Advertisement · 728×90 Banner</div>
-
 <!-- HEADER -->
 <header>
   <a class="logo" onclick="showHome()" href="javascript:void(0)">
@@ -901,8 +889,6 @@
 </div><!-- .container -->
 </main>
 
-<!-- BOTTOM AD BANNER -->
-<div class="ad-banner bottom">📢 Advertisement · 728×90 Banner</div>
 
 <footer>
   <strong>FileConverter</strong> — Free online file conversion. No uploads. No sign-up. All processing happens in your browser.
